@@ -2,6 +2,8 @@ version: "2.3"
 services:
   portfolio-redis:
     image: redis:6.2-alpine
+    ports:
+      - "127.0.0.1:6380:6379"
     container_name: portfolio-redis
     volumes:
       - ./dockerdata/redis/data:/data
@@ -16,6 +18,8 @@ services:
 
   portfolio-postgres:
     image: postgres:11-alpine
+    ports:
+      - "127.0.0.1:5433:5432"
     container_name: portfolio-postgres
     environment:
       - POSTGRES_PASSWORD=$PORTFOLIO_DB_PASSWORD
