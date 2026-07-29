@@ -657,7 +657,7 @@ SOURCES = {
     'BASEAUTH_USER_AUTOCOMPLETE': {
         apiconfig.URL: f'{BASEAUTH_API_URL}/api/v1/autocomplete',
         apiconfig.QUERY_FIELD: 'q',
-        apiconfig.PAYLOAD: {'type_': 'user', 'limit': '10'},
+        apiconfig.PAYLOAD: {'type': 'user', 'limit': '10'},
         apiconfig.TIMEOUT: 10,
         apiconfig.HEADER: {'X-Api-Key': f'{BASEAUTH_USER_TOKEN}'},
     },
