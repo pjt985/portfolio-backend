@@ -489,6 +489,7 @@ LANGUAGES_VOCID = 'languages'
 EN_LABELS_TITLE_CASE = env.bool('EN_LABELS_TITLE_CASE', default=True)
 
 ANGEWANDTE_API_KEY = env.str('ANGEWANDTE_API_KEY', default='')
+BASEAUTH_USER_TOKEN = env.str('BASEAUTH_USER_TOKEN', default='')
 PRIMO_API_URL = env.str(
     'PRIMO_API_URL', default='https://apigw.obvsg.at/primo/v1/search'
 )
@@ -498,6 +499,7 @@ PELIAS_API_KEY = env.str('PELIAS_API_KEY', default=None)
 PELIAS_API_KEY_LOCATION = env.str('PELIAS_API_KEY_LOCATION', default='PAYLOAD')
 PELIAS_API_URL = env.str('PELIAS_API_URL', default='https://api.geocode.earth/v1')
 PELIAS_SOURCE_NAME = env.str('PELIAS_SOURCE_NAME', default='geocode.earth')
+BASEAUTH_API_URL = env.str('BASEAUTH_API_URL', default=None)
 
 ACCEPT_LANGUAGE_HEADER = {'Accept-Language': get_language_lazy()}
 
@@ -652,6 +654,13 @@ SOURCES = {
         apiconfig.TIMEOUT: 10,
         apiconfig.HEADER: {'apikey': PRIMO_API_KEY},
     },
+    'BASEAUTH_USER_AUTOCOMPLETE': {
+        apiconfig.URL: f'{BASEAUTH_API_URL}/api/v1/autocomplete',
+        apiconfig.QUERY_FIELD: 'q',
+        apiconfig.PAYLOAD: {'type_': 'user', 'limit': '10'},
+        apiconfig.TIMEOUT: 10,
+        apiconfig.HEADER: {'X-Api-Key': f'{BASEAUTH_USER_TOKEN}'},
+    },
 }
 
 ANGEWANDTE_MAPPING = {
@@ -709,6 +718,11 @@ PRIMO_MAPPING = {
     'subject': ('pnx', 'display', 'subject'),
     'contributors': ('pnx', 'display', 'contributor'),
     'ispartof': ('pnx', 'display', 'ispartof'),
+}
+
+BASEAUTH_USER_AUTOCOMPLETE_MAPPING = {
+    'source': 'id',
+    'label': 'label',
 }
 
 
@@ -821,6 +835,11 @@ RESPONSE_MAPS = {
         apiconfig.DIRECT: PRIMO_MAPPING,
         apiconfig.RULES: {'source_name': {apiconfig.RULE: '"OBVSG"'}},
     },
+    'BASEAUTH_USER_AUTOCOMPLETE': {
+        apiconfig.RESULT: 'user',
+        apiconfig.DIRECT: BASEAUTH_USER_AUTOCOMPLETE_MAPPING,
+        apiconfig.RULES: {'source_name': {apiconfig.RULE: '"baseauth_users"'}},
+    },
 }
 
 BIBRECS = ('PRIMO_IMPORT',)
@@ -858,6 +877,7 @@ ACTIVE_SOURCES = {
     'softwarelicenses': 'core.skosmos.get_software_licenses',
     'texttypes': 'core.skosmos.get_text_types',
     'types': 'core.skosmos.get_entry_types',
+    'baseauth_users': ('BASEAUTH_USER_AUTOCOMPLETE',),
 }
 
 USER_QUOTA = env.int('USER_QUOTA', default=10 * 1024 * 1024 * 1024)  # user quota / year

@@ -60,18 +60,33 @@ def lookup_view_search(request, fieldname, searchstr='', *args, **kwargs):
     if isinstance(source, str):
         data = autosuggest(import_string(source)(), searchstr)
     else:
-        data = fetch_responses(searchstr, source)
+        data = fetch_responses(searchstr, source, request)
 
+    if fieldname == 'baseauth_users':
+        return Response(
+            [
+                {
+                    'id': 'baseauth_users',
+                    'label': 'users',
+                    'data': data,
+                }
+            ]
+        )
     return Response(data)
 
 
-def fetch_responses(querystring, active_sources):
+def fetch_responses(querystring, active_sources, request=None):
     responses = []
+
     for src in active_sources:
+        source_config = json.loads(
+            json.dumps(settings.SOURCES.get(src), cls=JSONEncoder)
+        )
+
         api = APIMapper(
             # this is kinda hacky - change it if there's a better solution to force evaluation of lazy objects
             # inside a dict
-            json.loads(json.dumps(settings.SOURCES.get(src), cls=JSONEncoder)),
+            source_config,
             settings.RESPONSE_MAPS.get(src),
             timeout=2,
         )
